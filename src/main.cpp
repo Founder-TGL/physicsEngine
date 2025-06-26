@@ -125,10 +125,10 @@ int main()
 	Camera camera(width, height, glm::vec3(0.0f, 0.0f, 2.0f));
 
 	// Instantiate PhysicsObjects
-	PhysicsObject pyramid(glm::vec3(-1.0f, 0.0f, 0.0f));
-	PhysicsObject cube(glm::vec3(1.0f, 0.0f, 0.0f));
+	PhysicsObject pyramid(10, glm::vec3(-10.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.2, 0.1f));
+	PhysicsObject cube(10, glm::vec3(10.0f, -1.0f, 0.0f), glm::vec3(0.0f, -0.1, -0.1f));
 
-	PhysicsObject sphere1(glm::vec3(0,0,9));
+	PhysicsObject sphere1(100, glm::vec3(0,0,9));
 
 	sphere1.SetAcceleration(glm::vec3(0.0f, -5.0f, 0.0f));  // simulate gravity
 
@@ -148,8 +148,19 @@ int main()
 		sphere1.Update(deltaTime);
 
 		if (sphere1.GetPosition().y <= -20){
-			sphere1.SetVelocity(glm::vec3(sphere1.GetVelocity().x, -0.8*(sphere1.GetVelocity().y), sphere1.GetVelocity().z));
+			sphere1.SetVelocity(glm::vec3(sphere1.GetVelocity().x, -1*(sphere1.GetVelocity().y), sphere1.GetVelocity().z));
 		}
+
+
+		glm::vec3 direction = cube.GetPosition() - pyramid.GetPosition();
+		float distance = glm::length(direction);
+		glm::vec3 forceDir = glm::normalize(direction);
+		float forceMag = 0.001f * (cube.GetMass() * pyramid.GetMass()) / (distance * distance);
+		glm::vec3 force = forceDir * forceMag;
+
+		cube.ApplyForce(-force);
+		pyramid.ApplyForce(force); 
+
 
 		// Specify the color of the background
 		glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
@@ -175,7 +186,7 @@ int main()
 		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 		cubeVAO.Bind();
 		glDrawElements(GL_TRIANGLES, cubeIndicesSize / sizeof(int), GL_UNSIGNED_INT, 0);
-		// Draw cube
+		// Draw sphere
 		model = sphere1.GetModelMatrix();
 		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 		sphereVAO.Bind();

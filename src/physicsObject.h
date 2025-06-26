@@ -8,20 +8,25 @@ class Shader;
 
 class PhysicsObject {
 public:
-    PhysicsObject(glm::vec3 position, glm::vec3 velocity = {}, glm::vec3 acceleration = {});
+    PhysicsObject(float mass, glm::vec3 position, glm::vec3 velocity = {}, glm::vec3 acceleration = {});
     
     void Update(float deltaTime);
+    void displayVelocity();
+    void ApplyForce(const glm::vec3& force);
+
+
     glm::mat4 GetModelMatrix() const;
     void SetAcceleration(glm::vec3 newAccel);
     void SetVelocity(glm::vec3 newVel);
     glm::vec3 GetVelocity();
-    void displayVelocity();
     glm::vec3 GetPosition() const;
+    float GetMass() const;
 
 private:
     glm::vec3 position;
     glm::vec3 velocity;
     glm::vec3 acceleration;
+    float mass;
 };
 
 #endif
