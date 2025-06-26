@@ -17,6 +17,7 @@
                 "${workspaceFolder}/src/shapeData.cpp",
                 "${workspaceFolder}/src/shaderClass.cpp",
                 "${workspaceFolder}/src/Camera.cpp",
+                "${workspaceFolder}/src/physicsWorld.cpp",
                 "${workspaceFolder}/src/physicsObject.cpp",
 
 

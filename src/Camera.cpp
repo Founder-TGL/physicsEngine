@@ -1,4 +1,5 @@
 #include "Camera.h"
+#include <iostream>
 
 
         Camera::Camera(int width, int height, glm::vec3 position){
@@ -47,17 +48,35 @@
             else if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE){
                 speed = 0.01f;
             }    
+            if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS){
+                bool pausePressedNow = glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS;
+                if (pausePressedNow && !pausePressedLastFrame) {
+                    paused = !paused;  // Toggle only when key is first pressed
+                    std::cout << "pause Toggled\n";
+                }
+                if(!pausePressedNow){
+                    
+                }
+
+                pausePressedLastFrame = pausePressedNow;
+                
+            }else if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_RELEASE){
+                pausePressedLastFrame = false;
+            }
+            
+
+
 
 
             if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS){
                 glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
-
                 if (firstClick)
                 {
-                    glfwSetCursorPos(window, (width / 2), (height / 2));
-                    firstClick = false;
+                    mouseLocked = true;
                 }
-                
+            }    
+
+            if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS){
 
                 double mouseX;
                 double mouseY;
@@ -78,9 +97,10 @@
 
                 glfwSetCursorPos(window, (width /2 ), (height/2));
             }    
-            else if (glfwGetKey(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE){
-                glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
+            if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS){
+                glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+                mouseLocked = false;
                 firstClick = true;
             }    
         }

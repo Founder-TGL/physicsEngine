@@ -14,6 +14,7 @@
 #include"VAO.h"
 #include"VBO.h"
 #include"EBO.h"
+#include"physicsWorld.h"
 #include <math.h>
 
 const unsigned int width = 800;
@@ -125,45 +126,44 @@ int main()
 	Camera camera(width, height, glm::vec3(0.0f, 0.0f, 2.0f));
 
 	// Instantiate PhysicsObjects
-	PhysicsObject pyramid(10, glm::vec3(-10.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.2, 0.1f));
-	PhysicsObject cube(10, glm::vec3(10.0f, -1.0f, 0.0f), glm::vec3(0.0f, -0.1, -0.1f));
-
-	PhysicsObject sphere1(100, glm::vec3(0,0,9));
+	PhysicsObject pyramid(200, glm::vec3(-10.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.2, 0.1f));
+	PhysicsObject cube(500, glm::vec3(10.0f, -1.0f, 0.0f), glm::vec3(0.0f, -0.1, -0.1f));
+	PhysicsObject sphere1(3000, glm::vec3(0,0,9));
 
 	sphere1.SetAcceleration(glm::vec3(0.0f, -5.0f, 0.0f));  // simulate gravity
 
-	float time = glfwGetTime();
-	
+	float time, currentTime = glfwGetTime();
+	PhysicsWorld world;
+	world.AddObject(&pyramid);
+	world.AddObject(&cube);
+	world.AddObject(&sphere1);	
+
+	float lastTime = glfwGetTime();
 	// Main while loop
 	while (!glfwWindowShouldClose(window))
 	{ 
 		float currentTime = glfwGetTime();
-		static float lastTime = currentTime;
 		float deltaTime = currentTime - lastTime;
 		lastTime = currentTime;
 
-		// Update physics
-		pyramid.Update(deltaTime);
-		cube.Update(deltaTime);
-		sphere1.Update(deltaTime);
-
-		if (sphere1.GetPosition().y <= -20){
-			sphere1.SetVelocity(glm::vec3(sphere1.GetVelocity().x, -1*(sphere1.GetVelocity().y), sphere1.GetVelocity().z));
+		if (!camera.paused)
+		{
+			world.Update(deltaTime);
 		}
+		if (camera.mouseLocked ){
+			double mouseX;
+            double mouseY;
 
+            glfwGetCursorPos(window, &mouseX, &mouseY);
 
-		glm::vec3 direction = cube.GetPosition() - pyramid.GetPosition();
-		float distance = glm::length(direction);
-		glm::vec3 forceDir = glm::normalize(direction);
-		float forceMag = 0.001f * (cube.GetMass() * pyramid.GetMass()) / (distance * distance);
-		glm::vec3 force = forceDir * forceMag;
+			if((mouseX < (width/2)-50) || (mouseX > (width/2)+50) || (mouseY < (height/2)-50) || (mouseY > (height/2)+50)){
+				glfwSetCursorPos(window, (width / 2), (height / 2));
+			}
 
-		cube.ApplyForce(-force);
-		pyramid.ApplyForce(force); 
-
-
+		}
+		
 		// Specify the color of the background
-		glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
+		glClearColor(0.0f, 0.0f, 0.01f, 1.0f);
 		// Clean the back buffer and assign the new color to it
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		// Tell OpenGL which Shader Program we want to use

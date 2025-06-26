@@ -22,6 +22,11 @@ public:
 
 	// Prevents the camera from jumping around when first clicking left click
 	bool firstClick = true;
+	// if the simulation is paused
+	bool paused = false;
+	bool pausePressedLastFrame = false; 
+	//if the mouse should be locked to the frame
+	bool mouseLocked = false;
 
 	// Stores the width and height of the window
 	int width;
