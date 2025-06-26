@@ -1,4 +1,9 @@
 #include "shapeData.h"
+#include <glm/glm.hpp>
+#include <glm/gtc/constants.hpp>
+#include <vector>
+#include <algorithm>
+
 
 GLfloat pyramidVertices[] = {
     -0.5f, 0.0f,  0.5f,  0.83f, 0.70f, 0.44f,
@@ -55,3 +60,29 @@ GLuint cubeIndices[] = {
 };
 const int cubeVerticesSize = sizeof(cubeVertices);
 const int cubeIndicesSize = sizeof(cubeIndices);
+
+GLfloat sphereVertices[] = {
+    // positions           // colors
+     0.0f,  1.0f,  0.0f,   0.8f, 0.5f, 0.2f,
+     0.894f,  0.447f,  0.0f,   0.8f, 0.5f, 0.2f,
+     0.276f,  0.447f,  0.851f,   0.8f, 0.5f, 0.2f,
+    -0.724f,  0.447f,  0.526f,   0.8f, 0.5f, 0.2f,
+    -0.724f,  0.447f, -0.526f,   0.8f, 0.5f, 0.2f,
+     0.276f,  0.447f, -0.851f,   0.8f, 0.5f, 0.2f,
+     0.724f, -0.447f,  0.526f,   0.8f, 0.5f, 0.2f,
+    -0.276f, -0.447f,  0.851f,   0.8f, 0.5f, 0.2f,
+    -0.894f, -0.447f,  0.0f,     0.8f, 0.5f, 0.2f,
+    -0.276f, -0.447f, -0.851f,   0.8f, 0.5f, 0.2f,
+     0.724f, -0.447f, -0.526f,   0.8f, 0.5f, 0.2f,
+     0.0f, -1.0f,  0.0f,         0.8f, 0.5f, 0.2f
+};
+
+GLuint sphereIndices[] = {
+    0,1,2, 0,2,3, 0,3,4, 0,4,5, 0,5,1,
+    1,6,2, 2,7,3, 3,8,4, 4,9,5, 5,10,1,
+    6,7,2, 7,8,3, 8,9,4, 9,10,5, 10,6,1,
+    6,11,7, 7,11,8, 8,11,9, 9,11,10, 10,11,6
+};
+
+const int sphereVerticesSize = sizeof(sphereVertices);
+const int sphereIndicesSize = sizeof(sphereIndices);
