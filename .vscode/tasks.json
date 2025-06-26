@@ -11,6 +11,15 @@
                 "-L${workspaceFolder}/lib",
                 "${workspaceFolder}/src/main.cpp",
                 "${workspaceFolder}/src/glad.c",
+                "${workspaceFolder}/src/VAO.cpp",
+                "${workspaceFolder}/src/VBO.cpp",
+                "${workspaceFolder}/src/EBO.cpp",
+                "${workspaceFolder}/src/shapeData.cpp",
+                "${workspaceFolder}/src/shaderClass.cpp",
+                "${workspaceFolder}/src/Camera.cpp",
+
+
+
                 "-lglfw3dll",
                 "-o",
                 "${workspaceFolder}/cutable.exe"
