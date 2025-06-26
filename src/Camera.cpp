@@ -2,10 +2,11 @@
 #include <iostream>
 
 
-        Camera::Camera(int width, int height, glm::vec3 position){
+        Camera::Camera(int width, int height, glm::vec3 position, SpacetimeGrid* grid){
             Camera::width = width;
             Camera::height = height;
             Position = position;
+            this->grid = grid;
         }
 
         void Camera::Matrix(float FOVdeg, float nearPlane, float farPlane, Shader&shader, const char* uniform){
@@ -23,7 +24,8 @@
         }
 
         
-        void Camera::Inputs(GLFWwindow* window){
+        void Camera::Inputs(GLFWwindow* window, SpacetimeGrid* overrideGrid){
+            SpacetimeGrid* activeGrid = overrideGrid ? overrideGrid : this->grid;
             if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS){
                 Position += speed * Orientation;
             }
@@ -49,20 +51,40 @@
                 speed = 0.01f;
             }    
             if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS){
-                bool pausePressedNow = glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS;
-                if (pausePressedNow && !pausePressedLastFrame) {
+                if ( !pausePressedLastFrame) {
                     paused = !paused;  // Toggle only when key is first pressed
                     std::cout << "pause Toggled\n";
                 }
-                if(!pausePressedNow){
-                    
-                }
 
-                pausePressedLastFrame = pausePressedNow;
+                pausePressedLastFrame = true;
                 
             }else if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_RELEASE){
                 pausePressedLastFrame = false;
             }
+
+            if (glfwGetKey(window, GLFW_KEY_GRAVE_ACCENT) == GLFW_PRESS){
+                if (!debugPressedLastFrame) {
+                    debugEnabled = !debugEnabled;  // Toggle only when key is first pressed
+                    std::cout << "debug Toggled\n";
+                }
+
+                debugPressedLastFrame = true;
+                
+            }else if (glfwGetKey(window, GLFW_KEY_GRAVE_ACCENT) == GLFW_RELEASE){
+                debugPressedLastFrame = false;
+            }
+            if (activeGrid){
+                if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS){
+                    if(debugEnabled){
+                        activeGrid->dilateWarpSharpness(0.001f);
+                    }
+                }if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS){
+                    if(debugEnabled){
+                        activeGrid->dilateWarpSharpness(-0.001f);                       
+                    }
+                }    
+            }
+            
             
 
 

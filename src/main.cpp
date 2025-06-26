@@ -60,100 +60,67 @@ int main()
 
 
 
-	// Generates Vertex Array Object and binds it
-	VAO pyramidVAO;
+	/* pyramid */
+	VAO pyramidVAO;// Generates Vertex Array Object and binds it
 	pyramidVAO.Bind();
-
-	// Generates Vertex Buffer Object and links it to pyramidVertices
-	VBO pyramidVBO(pyramidVertices, pyramidVerticesSize);
-
-	// Generates Element Buffer Object and links it to pyramidIndices
-	EBO pyramidEBO(pyramidIndices, pyramidIndicesSize);
-
-	// Links VBO to VAO
-	pyramidVAO.LinkAttrib(pyramidVBO, 0, 3, GL_FLOAT, 6 * sizeof(float), (void*)0);
+	VBO pyramidVBO(pyramidVertices, pyramidVerticesSize);// Generates Vertex Buffer Object and links it to pyramidVertices
+	EBO pyramidEBO(pyramidIndices, pyramidIndicesSize);// Generates Element Buffer Object and links it to pyramidIndices
+	pyramidVAO.LinkAttrib(pyramidVBO, 0, 3, GL_FLOAT, 6 * sizeof(float), (void*)0);	// Links VBO to VAO
 	pyramidVAO.LinkAttrib(pyramidVBO, 1, 3, GL_FLOAT, 6 * sizeof(float), (void*)(3 * sizeof(float)));
-
-	// Unbind all to prevent accidentally modifying them
-	pyramidVAO.Unbind();
+	pyramidVAO.Unbind();	// Unbind all to prevent accidentally modifying them
 	pyramidVBO.Unbind();
 	pyramidEBO.Unbind();
 
-
-
-	// Generates Vertex Array Object and binds it
-	VAO cubeVAO;
+	/* cube */
+	VAO cubeVAO;	// Generates Vertex Array Object and binds it
 	cubeVAO.Bind();
-
-	// Generates Vertex Buffer Object and links it to pyramidVertices
-	VBO cubeVBO(cubeVertices, cubeVerticesSize);
-	// Generates Element Buffer Object and links it to pyramidIndices
-	EBO cubeEBO(cubeIndices, cubeIndicesSize);
-
-	// Links VBO to VAO
-	cubeVAO.LinkAttrib(cubeVBO, 0, 3, GL_FLOAT, 6 * sizeof(float), (void*)0);
+	VBO cubeVBO(cubeVertices, cubeVerticesSize);// Generates Vertex Buffer Object and links it to pyramidVertices
+	EBO cubeEBO(cubeIndices, cubeIndicesSize);	// Generates Element Buffer Object and links it to pyramidIndices
+	cubeVAO.LinkAttrib(cubeVBO, 0, 3, GL_FLOAT, 6 * sizeof(float), (void*)0);	// Links VBO to VAO
 	cubeVAO.LinkAttrib(cubeVBO, 1, 3, GL_FLOAT, 6 * sizeof(float), (void*)(3 * sizeof(float)));
-
-	// Unbind all to prevent accidentally modifying them
-	cubeVAO.Unbind();
+	cubeVAO.Unbind();	// Unbind all to prevent accidentally modifying them
 	cubeVBO.Unbind();
 	cubeEBO.Unbind();
-	
 
-	// Generates Vertex Array Object and binds it
-	VAO sphereVAO;
+	/* sphere */
+	VAO sphereVAO;// Generates Vertex Array Object and binds it
 	sphereVAO.Bind();
-
-	// Generates Vertex Buffer Object and links it to pyramidVertices
-	VBO sphereVBO(sphereVertices, sphereVerticesSize);
-	// Generates Element Buffer Object and links it to pyramidIndices
-	EBO sphereEBO(sphereIndices, sphereIndicesSize);
-
-	// Links VBO to VAO
-	sphereVAO.LinkAttrib(sphereVBO, 0, 3, GL_FLOAT, 6 * sizeof(float), (void*)0);
+	VBO sphereVBO(sphereVertices, sphereVerticesSize);// Generates Vertex Buffer Object and links it to pyramidVertices
+	EBO sphereEBO(sphereIndices, sphereIndicesSize);// Generates Element Buffer Object and links it to pyramidIndices
+	sphereVAO.LinkAttrib(sphereVBO, 0, 3, GL_FLOAT, 6 * sizeof(float), (void*)0);	// Links VBO to VAO
 	sphereVAO.LinkAttrib(sphereVBO, 1, 3, GL_FLOAT, 6 * sizeof(float), (void*)(3 * sizeof(float)));
-
-	// Unbind all to prevent accidentally modifying them
-	sphereVAO.Unbind();
+	sphereVAO.Unbind();	// Unbind all to prevent accidentally modifying them
 	sphereVBO.Unbind();
 	sphereEBO.Unbind();
 
-	// Generates Vertex Array Object and binds it
-	SpacetimeGrid grid(150, 0.3f); 
-	VAO gridVAO;
+	
+	/* spaceTimeGrid */
+	SpacetimeGrid grid(100, 0.4f); 
+	VAO gridVAO;// Generates Vertex Array Object and binds it
 	gridVAO.Bind();
-
-	// Generates Vertex Buffer Object and links it to pyramidVertices
-	VBO gridVBO(grid.vertices.data(), grid.vertices.size() * sizeof(float));
-	// Generates Element Buffer Object and links it to pyramidIndices
-	EBO gridEBO(grid.indices.data(), grid.indices.size() * sizeof(unsigned int));
-
-	// Links VBO to VAO
-	gridVAO.LinkAttrib(gridVBO, 0, 3, GL_FLOAT, 6 * sizeof(float), (void*)0);      // position
-	gridVAO.LinkAttrib(gridVBO, 1, 3, GL_FLOAT, 6 * sizeof(float), (void*)(3 * sizeof(float))); // color
-
-	// Unbind all to prevent accidentally modifying them
-	gridVAO.Unbind();
+	VBO gridVBO(grid.vertices.data(), grid.vertices.size() * sizeof(float));// Generates Vertex Buffer Object and links it to pyramidVertices
+	EBO gridEBO(grid.indices.data(), grid.indices.size() * sizeof(GLuint));// Generates Element Buffer Object and links it to pyramidIndices
+	gridVAO.LinkAttrib(gridVBO, 0, 3, GL_FLOAT, 6 * sizeof(float), (void*)0);	// Links VBO to VAO
+	gridVAO.LinkAttrib(gridVBO, 1, 3, GL_FLOAT, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+	gridVAO.Unbind();	// Unbind all to prevent accidentally modifying them
 	gridVBO.Unbind();
 	gridEBO.Unbind();
 	
 
 	glEnable(GL_DEPTH_TEST);
 
-	Camera camera(width, height, glm::vec3(0.0f, 15.0f, 2.0f));
+	Camera camera(width, height, glm::vec3(5.0f, 10.0f, -5.0f), &grid);
 
-	// Instantiate PhysicsObjects
+	// Instantiate PhysicsObjects		
 	PhysicsObject pyramid(200, glm::vec3(-10.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.2, 0.1f));
 	PhysicsObject cube(500, glm::vec3(10.0f, -1.0f, 0.0f), glm::vec3(0.0f, -0.1, -0.1f));
-	PhysicsObject sphere1(3000, glm::vec3(0,0,9));
-
-	sphere1.SetAcceleration(glm::vec3(0.0f, -5.0f, 0.0f));  // simulate gravity
+	PhysicsObject sphere(3000, glm::vec3(0,0,9));
 
 	float time, currentTime = glfwGetTime();
 	PhysicsWorld world;
 	world.AddObject(&pyramid);
 	world.AddObject(&cube);
-	world.AddObject(&sphere1);	
+	world.AddObject(&sphere);	
 
 	float lastTime = glfwGetTime();
 
@@ -166,16 +133,16 @@ int main()
 		float deltaTime = currentTime - lastTime;
 		lastTime = currentTime;
 
-		
-		if (!camera.paused)
+		if (!camera.paused)		//pauses the simmulation
 		{
 			world.Update(deltaTime);
-			grid.Update(world.GetObjects()); // ← Apply spacetime warping
+			grid.Update(world.GetObjects()); // Apply spacetime warping
 
 			glBindBuffer(GL_ARRAY_BUFFER, gridVBO.ID);
 			glBufferSubData(GL_ARRAY_BUFFER, 0, grid.vertices.size() * sizeof(float), grid.vertices.data());
 		}
-		if (camera.mouseLocked ){
+		if (camera.mouseLocked )		//locks the mouse to the center of screen
+		{
 			double mouseX;
             double mouseY;
 
@@ -187,46 +154,47 @@ int main()
 
 		}
 		
-		// Specify the color of the background
-		glClearColor(0.0f, 0.0f, 0.01f, 1.0f);
-		// Clean the back buffer and assign the new color to it
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		// Tell OpenGL which Shader Program we want to use
-		shaderProgram.Activate();
+		glClearColor(0.0f, 0.0f, 0.01f, 1.0f);		// Specify the color of the background
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);		// Clean the back buffer and assign the new color to it
+		shaderProgram.Activate();		// Tell OpenGL which Shader Program we want to use
+
 		
-		camera.Inputs(window);
-		camera.Matrix(45.0f, 0.1f, 100.0f, shaderProgram, "camMatrix");
+		camera.Inputs(window, &grid);
+		camera.Matrix(45.0f, 0.1f, 1000.0f, shaderProgram, "camMatrix");
 
 		glm::mat4 model = glm::mat4(1.0f);
 		int modelLoc = glGetUniformLocation(shaderProgram.ID, "model");
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);		//sets the draw to be solid object (as its set else for the spacetime grid)
 
-glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-		// Draw pyramid
+		/* pyramid */
 		model = pyramid.GetModelMatrix();
 		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 		pyramidVAO.Bind();
 		glDrawElements(GL_TRIANGLES, pyramidIndicesSize / sizeof(int), GL_UNSIGNED_INT, 0);
-		// Draw cube
+
+		/* cube */
 		model = cube.GetModelMatrix();
 		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 		cubeVAO.Bind();
 		glDrawElements(GL_TRIANGLES, cubeIndicesSize / sizeof(int), GL_UNSIGNED_INT, 0);
-		// Draw sphere
-		model = sphere1.GetModelMatrix();
+
+		/* sphere */
+		model = sphere.GetModelMatrix();
 		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 		sphereVAO.Bind();
 		glDrawElements(GL_TRIANGLES, sphereIndicesSize / sizeof(int), GL_UNSIGNED_INT, 0);
-		// Draw grid
+
+		/* grid */
+		// std::cout << "Drawing grid with " << grid.indices.size() / 3 << " triangles\n";
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);//sets the draw to only do edges (for a more graphy feel)
 		model = grid.GetModelMatrix();
 		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 		gridVAO.Bind();
 		glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(grid.indices.size()), GL_UNSIGNED_INT, 0);
 
 
-		// Swap the back buffer with the front buffer
-		glfwSwapBuffers(window);
-		// Take care of all GLFW events
-		glfwPollEvents();
+		glfwSwapBuffers(window);		// Swap the back buffer with the front buffer
+		glfwPollEvents();		// Take care of all GLFW events
 	}
 
 

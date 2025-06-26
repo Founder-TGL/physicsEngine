@@ -13,12 +13,14 @@ public:
     int resolution;
     float spacing;
 
-    SpacetimeGrid(int resolution = 100, float spacing = 0.2f);
+    SpacetimeGrid(int resolution = 100, float spacing = 0.2f, float warpSharpness = 0.3f);
     void Update(const std::vector<PhysicsObject*>& objects);
     glm::mat4 GetModelMatrix() const;
+    void dilateWarpSharpness(float sharpness);
     
 private:
     glm::vec3 position;
+    float warpSharpness;
 };
 
 #endif

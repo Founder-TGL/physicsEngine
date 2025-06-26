@@ -9,6 +9,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/rotate_vector.hpp>
 #include <glm/gtx/vector_angle.hpp>
+#include "spaceTimeGrid.h"
 
 #include "shaderClass.h"
 
@@ -27,6 +28,12 @@ public:
 	bool pausePressedLastFrame = false; 
 	//if the mouse should be locked to the frame
 	bool mouseLocked = false;
+	//checks whether debug mode is enabled
+	bool debugEnabled = false;
+	bool debugPressedLastFrame = false; 
+
+	//debug values
+	SpacetimeGrid* grid;
 
 	// Stores the width and height of the window
 	int width;
@@ -36,12 +43,14 @@ public:
 	float speed = 0.1f;
 	float sensitivity = 10.0f;
 
+
+
 	// Camera constructor to set up initial values
-	Camera(int width, int height, glm::vec3 position);
+	Camera(int width, int height, glm::vec3 position, SpacetimeGrid* grid = nullptr);
 
 	// Updates and exports the camera matrix to the Vertex Shader
 	void Matrix(float FOVdeg, float nearPlane, float farPlane, Shader& shader, const char* uniform);
 	// Handles camera inputs
-	void Inputs(GLFWwindow* window);
+	void Inputs(GLFWwindow* window, SpacetimeGrid* overrideGrid = nullptr);
 };
 #endif
