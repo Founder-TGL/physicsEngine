@@ -19,6 +19,9 @@ float PhysicsWorld::GetGravityConstant() const {
     return gravitationalConstant;
 }
 
+std::vector<PhysicsObject*> PhysicsWorld::GetObjects(){return objects;}
+
+
 void PhysicsWorld::Update(float deltaTime) {
     // Reset accelerations
     for (PhysicsObject* obj : objects) {

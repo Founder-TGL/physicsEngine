@@ -14,6 +14,7 @@
 #include"VAO.h"
 #include"VBO.h"
 #include"EBO.h"
+#include"spaceTimeGrid.h"
 #include"physicsWorld.h"
 #include <math.h>
 
@@ -117,13 +118,29 @@ int main()
 	sphereVBO.Unbind();
 	sphereEBO.Unbind();
 
+	// Generates Vertex Array Object and binds it
+	SpacetimeGrid grid(150, 0.3f); 
+	VAO gridVAO;
+	gridVAO.Bind();
 
-	// //texture (not working will trouble shoot later)
+	// Generates Vertex Buffer Object and links it to pyramidVertices
+	VBO gridVBO(grid.vertices.data(), grid.vertices.size() * sizeof(float));
+	// Generates Element Buffer Object and links it to pyramidIndices
+	EBO gridEBO(grid.indices.data(), grid.indices.size() * sizeof(unsigned int));
+
+	// Links VBO to VAO
+	gridVAO.LinkAttrib(gridVBO, 0, 3, GL_FLOAT, 6 * sizeof(float), (void*)0);      // position
+	gridVAO.LinkAttrib(gridVBO, 1, 3, GL_FLOAT, 6 * sizeof(float), (void*)(3 * sizeof(float))); // color
+
+	// Unbind all to prevent accidentally modifying them
+	gridVAO.Unbind();
+	gridVBO.Unbind();
+	gridEBO.Unbind();
 	
 
 	glEnable(GL_DEPTH_TEST);
 
-	Camera camera(width, height, glm::vec3(0.0f, 0.0f, 2.0f));
+	Camera camera(width, height, glm::vec3(0.0f, 15.0f, 2.0f));
 
 	// Instantiate PhysicsObjects
 	PhysicsObject pyramid(200, glm::vec3(-10.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.2, 0.1f));
@@ -139,6 +156,9 @@ int main()
 	world.AddObject(&sphere1);	
 
 	float lastTime = glfwGetTime();
+
+
+
 	// Main while loop
 	while (!glfwWindowShouldClose(window))
 	{ 
@@ -146,9 +166,14 @@ int main()
 		float deltaTime = currentTime - lastTime;
 		lastTime = currentTime;
 
+		
 		if (!camera.paused)
 		{
 			world.Update(deltaTime);
+			grid.Update(world.GetObjects()); // ← Apply spacetime warping
+
+			glBindBuffer(GL_ARRAY_BUFFER, gridVBO.ID);
+			glBufferSubData(GL_ARRAY_BUFFER, 0, grid.vertices.size() * sizeof(float), grid.vertices.data());
 		}
 		if (camera.mouseLocked ){
 			double mouseX;
@@ -175,7 +200,7 @@ int main()
 		glm::mat4 model = glm::mat4(1.0f);
 		int modelLoc = glGetUniformLocation(shaderProgram.ID, "model");
 
-
+glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		// Draw pyramid
 		model = pyramid.GetModelMatrix();
 		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
@@ -191,6 +216,11 @@ int main()
 		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 		sphereVAO.Bind();
 		glDrawElements(GL_TRIANGLES, sphereIndicesSize / sizeof(int), GL_UNSIGNED_INT, 0);
+		// Draw grid
+		model = grid.GetModelMatrix();
+		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+		gridVAO.Bind();
+		glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(grid.indices.size()), GL_UNSIGNED_INT, 0);
 
 
 		// Swap the back buffer with the front buffer

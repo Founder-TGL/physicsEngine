@@ -86,3 +86,4 @@ GLuint sphereIndices[] = {
 
 const int sphereVerticesSize = sizeof(sphereVertices);
 const int sphereIndicesSize = sizeof(sphereIndices);
+

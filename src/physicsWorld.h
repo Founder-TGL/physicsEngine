@@ -14,6 +14,7 @@ public:
 
     void SetGravityConstant(float g);
     float GetGravityConstant() const;
+    std::vector<PhysicsObject*> GetObjects();
 
 private:
     std::vector<PhysicsObject*> objects;
