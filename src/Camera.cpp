@@ -1,12 +1,14 @@
 #include "Camera.h"
 #include <iostream>
+#include <glm/gtx/string_cast.hpp>
 
 
-        Camera::Camera(int width, int height, glm::vec3 position, SpacetimeGrid* grid){
+        Camera::Camera(int width, int height, glm::vec3 position, PhysicsWorld* physWorld, SpacetimeGrid* grid){
             Camera::width = width;
             Camera::height = height;
             Position = position;
             this->grid = grid;
+            this->physWorld = physWorld;
         }
 
         void Camera::Matrix(float FOVdeg, float nearPlane, float farPlane, Shader&shader, const char* uniform){
@@ -24,8 +26,11 @@
         }
 
         
-        void Camera::Inputs(GLFWwindow* window, SpacetimeGrid* overrideGrid){
+        void Camera::Inputs(GLFWwindow* window, PhysicsWorld* overrideWorld, SpacetimeGrid* overrideGrid){
             SpacetimeGrid* activeGrid = overrideGrid ? overrideGrid : this->grid;
+            PhysicsWorld* activeWorld = overrideWorld ? overrideWorld : this->physWorld;
+
+
             if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS){
                 Position += speed * Orientation;
             }
@@ -38,18 +43,23 @@
             if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS){
                 Position += speed * glm::normalize(glm::cross(Orientation, Up));;
             }
+
             if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS){
                 Position += speed * Up;
             }
             if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS){
                 Position += speed * -Up;
             }        
+
             if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS){
-                speed = 0.04f;
+                speed = 0.1f;
             }
             else if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE){
-                speed = 0.01f;
+                speed = 0.05f;
             }    
+
+
+
             if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS){
                 if ( !pausePressedLastFrame) {
                     paused = !paused;  // Toggle only when key is first pressed
@@ -61,7 +71,6 @@
             }else if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_RELEASE){
                 pausePressedLastFrame = false;
             }
-
             if (glfwGetKey(window, GLFW_KEY_GRAVE_ACCENT) == GLFW_PRESS){
                 if (!debugPressedLastFrame) {
                     debugEnabled = !debugEnabled;  // Toggle only when key is first pressed
@@ -77,18 +86,82 @@
                 if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS){
                     if(debugEnabled){
                         activeGrid->dilateWarpSharpness(0.001f);
+                    }else {
+                        if (spawnDistance < 35.0f){
+                            spawnDistance += 0.01f;
+                            std::cout << spawnDistance << std::endl;
+                        }
                     }
                 }if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS){
                     if(debugEnabled){
                         activeGrid->dilateWarpSharpness(-0.001f);                       
+                    }else {
+                        if (spawnDistance > 0.2f){
+                            spawnDistance -= 0.01f;
+                            std::cout << spawnDistance << std::endl;
+                        }
                     }
                 }    
             }
+            if (activeWorld){
+                if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS){
+                    if (!resetPressedLastFrame){
+                        activeWorld->Reset();
+                        std::cout << "reset world" << std::endl;
+                    }
+                    resetPressedLastFrame = true;
+                }else if (glfwGetKey(window, GLFW_KEY_R) == GLFW_RELEASE) {
+                    resetPressedLastFrame = false;
+                }
+                
+
+                if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS){
+                    activeWorld->clearObjects();
+                }
+
+                // PYRAMID
+                if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS) {
+                    if (!spawn1PressedLastFrame && pyramidRenderable) {
+                        glm::vec3 spawnPos = Position + Orientation * spawnDistance;
+                        PhysicsObject* newPyramid = new PhysicsObject(500.0f, spawnPos, pyramidRenderable);
+                        activeWorld->AddObject(newPyramid);
+                        std::cout << "Spawned pyramid at " << glm::to_string(spawnPos) << std::endl;
+                    }
+                    spawn1PressedLastFrame = true;
+                } else {
+                    spawn1PressedLastFrame = false;
+                }
+
+                // CUBE
+                if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS) {
+                    if (!spawn2PressedLastFrame && cubeRenderable) {
+                        glm::vec3 spawnPos = Position + Orientation * spawnDistance;
+                        PhysicsObject* newCube = new PhysicsObject(1000.0f, spawnPos, cubeRenderable);
+                        activeWorld->AddObject(newCube);
+                        std::cout << "Spawned cube at " << glm::to_string(spawnPos) << std::endl;
+                    }
+                    spawn2PressedLastFrame = true;
+                } else {
+                    spawn2PressedLastFrame = false;
+                }
+
+                // SPHERE
+                if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS) {
+                    if (!spawn3PressedLastFrame && sphereRenderable) {
+                        glm::vec3 spawnPos = Position + Orientation * spawnDistance;
+                        PhysicsObject* newSphere = new PhysicsObject(3000.0f, spawnPos, sphereRenderable);
+                        activeWorld->AddObject(newSphere);
+                        std::cout << "Spawned sphere at " << glm::to_string(spawnPos) << std::endl;
+                    }
+                    spawn3PressedLastFrame = true;
+                } else {
+                    spawn3PressedLastFrame = false;
+                }
+
+                
+            }
             
             
-
-
-
 
             if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS){
                 glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);

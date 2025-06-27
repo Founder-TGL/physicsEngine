@@ -8,8 +8,9 @@ class PhysicsWorld {
 public:
 
     PhysicsWorld(float gravityConst = 0.01f);
-
     void AddObject(PhysicsObject* obj);
+    void clearObjects();
+    void Reset();
     void Update(float deltaTime);
 
     void SetGravityConstant(float g);
@@ -18,6 +19,7 @@ public:
 
 private:
     std::vector<PhysicsObject*> objects;
+    std::vector<PhysicsObject> objectsCopy;
     float gravitationalConstant;
 
     void ApplyMutualGravity(PhysicsObject* a, PhysicsObject* b);

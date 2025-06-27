@@ -10,6 +10,7 @@
 #include <glm/gtx/rotate_vector.hpp>
 #include <glm/gtx/vector_angle.hpp>
 #include "spaceTimeGrid.h"
+#include "physicsWorld.h"
 
 #include "shaderClass.h"
 
@@ -31,26 +32,38 @@ public:
 	//checks whether debug mode is enabled
 	bool debugEnabled = false;
 	bool debugPressedLastFrame = false; 
+	//checks whether reset button was pressed
+	bool resetPressedLastFrame = false; 
+	//checks if spawn was pressed last frame
+	Renderable* pyramidRenderable = nullptr;
+	Renderable* cubeRenderable = nullptr;
+	Renderable* sphereRenderable = nullptr;
+	bool spawn1PressedLastFrame = false;
+	bool spawn2PressedLastFrame = false;
+	bool spawn3PressedLastFrame = false;
+
 
 	//debug values
 	SpacetimeGrid* grid;
+	PhysicsWorld* physWorld;
+	float spawnDistance = 5.0f;
 
 	// Stores the width and height of the window
 	int width;
 	int height;
 
 	// Adjust the speed of the camera and it's sensitivity when looking around
-	float speed = 0.1f;
+	float speed = 0.05f;
 	float sensitivity = 10.0f;
 
 
 
 	// Camera constructor to set up initial values
-	Camera(int width, int height, glm::vec3 position, SpacetimeGrid* grid = nullptr);
+	Camera(int width, int height, glm::vec3 position, PhysicsWorld* physWorld = nullptr, SpacetimeGrid* grid = nullptr);
 
 	// Updates and exports the camera matrix to the Vertex Shader
 	void Matrix(float FOVdeg, float nearPlane, float farPlane, Shader& shader, const char* uniform);
 	// Handles camera inputs
-	void Inputs(GLFWwindow* window, SpacetimeGrid* overrideGrid = nullptr);
+	void Inputs(GLFWwindow* window, PhysicsWorld* overrideWorld = nullptr, SpacetimeGrid* overrideGrid = nullptr);
 };
 #endif

@@ -14,6 +14,7 @@
                 "${workspaceFolder}/src/VAO.cpp",
                 "${workspaceFolder}/src/VBO.cpp",
                 "${workspaceFolder}/src/EBO.cpp",
+                "${workspaceFolder}/src/Renderable.cpp",
                 "${workspaceFolder}/src/shapeData.cpp",
                 "${workspaceFolder}/src/shaderClass.cpp",
                 "${workspaceFolder}/src/Camera.cpp",

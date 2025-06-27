@@ -9,6 +9,18 @@ PhysicsWorld::PhysicsWorld(float gravityConst)
 
 void PhysicsWorld::AddObject(PhysicsObject* obj) {
     objects.push_back(obj);
+    objectsCopy.push_back(*obj);
+}
+void PhysicsWorld::clearObjects() {
+    objects.clear();
+    objectsCopy.clear();
+}
+
+void PhysicsWorld::Reset(){         // resets to original states
+    int objCount = objects.size();
+    for (size_t i = 0; i < objects.size(); ++i) {
+        *objects[i] = objectsCopy[i];
+    }
 }
 
 void PhysicsWorld::SetGravityConstant(float g) {

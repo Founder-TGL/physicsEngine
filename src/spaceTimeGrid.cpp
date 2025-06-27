@@ -25,6 +25,8 @@ SpacetimeGrid::SpacetimeGrid(int res, float space, float warpSharpness) : resolu
             indices.insert(indices.end(), { static_cast<GLuint>(topRight), static_cast<GLuint>(bottomRight),  static_cast<GLuint>(bottomLeft)});
         }
     }
+
+    baseVertices = vertices;
 }
 
 void SpacetimeGrid::Update(const std::vector<PhysicsObject*>& objects) {
@@ -36,10 +38,11 @@ void SpacetimeGrid::Update(const std::vector<PhysicsObject*>& objects) {
             int index = (z * (resolution + 1) + x) * 6;
 
             glm::vec3 localPos(
-                vertices[index],
-                vertices[index + 1],
-                vertices[index + 2]
+                baseVertices[index],
+                baseVertices[index + 1],
+                baseVertices[index + 2]
             );
+
 
             // Convert to world space
             glm::vec3 worldPos = glm::vec3(modelMatrix * glm::vec4(localPos, 1.0f));
@@ -51,10 +54,10 @@ void SpacetimeGrid::Update(const std::vector<PhysicsObject*>& objects) {
                 float dz = worldPos.z - objPos.z;
                 float dist = sqrt(dx * dx + dz * dz);
                 float falloff = exp(-dist * warpSharpness);
-                yWarp += -obj->GetMass() * falloff * 0.1f;
+                yWarp += -obj->GetMass() * falloff;
             }
 
-            worldPos.y += yWarp * 0.001f;
+            worldPos.y += yWarp * 0.003f;
 
             // Convert back to local space
             glm::vec3 warpedLocal = glm::vec3(invModel * glm::vec4(worldPos, 1.0f));

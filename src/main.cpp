@@ -18,8 +18,8 @@
 #include"physicsWorld.h"
 #include <math.h>
 
-const unsigned int width = 800;
-const unsigned int height = 800;
+const unsigned int width = 1500;
+const unsigned int height = 1000;
 
 
 int main()
@@ -57,45 +57,9 @@ int main()
 
 	// Generates Shader object using shaders defualt.vert and default.frag
 	Shader shaderProgram("default.vert", "default.frag");
-
-
-
-	/* pyramid */
-	VAO pyramidVAO;// Generates Vertex Array Object and binds it
-	pyramidVAO.Bind();
-	VBO pyramidVBO(pyramidVertices, pyramidVerticesSize);// Generates Vertex Buffer Object and links it to pyramidVertices
-	EBO pyramidEBO(pyramidIndices, pyramidIndicesSize);// Generates Element Buffer Object and links it to pyramidIndices
-	pyramidVAO.LinkAttrib(pyramidVBO, 0, 3, GL_FLOAT, 6 * sizeof(float), (void*)0);	// Links VBO to VAO
-	pyramidVAO.LinkAttrib(pyramidVBO, 1, 3, GL_FLOAT, 6 * sizeof(float), (void*)(3 * sizeof(float)));
-	pyramidVAO.Unbind();	// Unbind all to prevent accidentally modifying them
-	pyramidVBO.Unbind();
-	pyramidEBO.Unbind();
-
-	/* cube */
-	VAO cubeVAO;	// Generates Vertex Array Object and binds it
-	cubeVAO.Bind();
-	VBO cubeVBO(cubeVertices, cubeVerticesSize);// Generates Vertex Buffer Object and links it to pyramidVertices
-	EBO cubeEBO(cubeIndices, cubeIndicesSize);	// Generates Element Buffer Object and links it to pyramidIndices
-	cubeVAO.LinkAttrib(cubeVBO, 0, 3, GL_FLOAT, 6 * sizeof(float), (void*)0);	// Links VBO to VAO
-	cubeVAO.LinkAttrib(cubeVBO, 1, 3, GL_FLOAT, 6 * sizeof(float), (void*)(3 * sizeof(float)));
-	cubeVAO.Unbind();	// Unbind all to prevent accidentally modifying them
-	cubeVBO.Unbind();
-	cubeEBO.Unbind();
-
-	/* sphere */
-	VAO sphereVAO;// Generates Vertex Array Object and binds it
-	sphereVAO.Bind();
-	VBO sphereVBO(sphereVertices, sphereVerticesSize);// Generates Vertex Buffer Object and links it to pyramidVertices
-	EBO sphereEBO(sphereIndices, sphereIndicesSize);// Generates Element Buffer Object and links it to pyramidIndices
-	sphereVAO.LinkAttrib(sphereVBO, 0, 3, GL_FLOAT, 6 * sizeof(float), (void*)0);	// Links VBO to VAO
-	sphereVAO.LinkAttrib(sphereVBO, 1, 3, GL_FLOAT, 6 * sizeof(float), (void*)(3 * sizeof(float)));
-	sphereVAO.Unbind();	// Unbind all to prevent accidentally modifying them
-	sphereVBO.Unbind();
-	sphereEBO.Unbind();
-
 	
 	/* spaceTimeGrid */
-	SpacetimeGrid grid(100, 0.4f); 
+	SpacetimeGrid grid(100, 1.0f); 
 	VAO gridVAO;// Generates Vertex Array Object and binds it
 	gridVAO.Bind();
 	VBO gridVBO(grid.vertices.data(), grid.vertices.size() * sizeof(float));// Generates Vertex Buffer Object and links it to pyramidVertices
@@ -109,18 +73,25 @@ int main()
 
 	glEnable(GL_DEPTH_TEST);
 
-	Camera camera(width, height, glm::vec3(5.0f, 10.0f, -5.0f), &grid);
-
+	Renderable pyramidMesh(pyramidVertices, pyramidVerticesSize, pyramidIndices, pyramidIndicesSize);
+	Renderable cubeMesh(cubeVertices, cubeVerticesSize, cubeIndices, cubeIndicesSize);
+	Renderable sphereMesh(sphereVertices, sphereVerticesSize, sphereIndices, sphereIndicesSize);
 	// Instantiate PhysicsObjects		
-	PhysicsObject pyramid(200, glm::vec3(-10.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.2, 0.1f));
-	PhysicsObject cube(500, glm::vec3(10.0f, -1.0f, 0.0f), glm::vec3(0.0f, -0.1, -0.1f));
-	PhysicsObject sphere(3000, glm::vec3(0,0,9));
+	PhysicsObject pyramid(500, glm::vec3(-10.0f, 1.0f, 0.0f), &pyramidMesh);
+	PhysicsObject cube(1000, glm::vec3(10.0f, -1.0f, 0.0f), &cubeMesh);
+	PhysicsObject sphere(3000, glm::vec3(0,0,9), &sphereMesh);
 
 	float time, currentTime = glfwGetTime();
 	PhysicsWorld world;
 	world.AddObject(&pyramid);
 	world.AddObject(&cube);
 	world.AddObject(&sphere);	
+
+	Camera camera(width, height, glm::vec3(0.0f, 3.0f, 30.0f), &world , &grid);
+	camera.pyramidRenderable = &pyramidMesh;
+	camera.cubeRenderable = &cubeMesh;
+	camera.sphereRenderable = &sphereMesh;
+
 
 	float lastTime = glfwGetTime();
 
@@ -159,30 +130,16 @@ int main()
 		shaderProgram.Activate();		// Tell OpenGL which Shader Program we want to use
 
 		
-		camera.Inputs(window, &grid);
+		camera.Inputs(window, &world, &grid);
 		camera.Matrix(45.0f, 0.1f, 1000.0f, shaderProgram, "camMatrix");
 
 		glm::mat4 model = glm::mat4(1.0f);
 		int modelLoc = glGetUniformLocation(shaderProgram.ID, "model");
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);		//sets the draw to be solid object (as its set else for the spacetime grid)
 
-		/* pyramid */
-		model = pyramid.GetModelMatrix();
-		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-		pyramidVAO.Bind();
-		glDrawElements(GL_TRIANGLES, pyramidIndicesSize / sizeof(int), GL_UNSIGNED_INT, 0);
-
-		/* cube */
-		model = cube.GetModelMatrix();
-		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-		cubeVAO.Bind();
-		glDrawElements(GL_TRIANGLES, cubeIndicesSize / sizeof(int), GL_UNSIGNED_INT, 0);
-
-		/* sphere */
-		model = sphere.GetModelMatrix();
-		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-		sphereVAO.Bind();
-		glDrawElements(GL_TRIANGLES, sphereIndicesSize / sizeof(int), GL_UNSIGNED_INT, 0);
+		for (PhysicsObject* obj : world.GetObjects()) {
+			obj->Draw(shaderProgram);
+		}
 
 		/* grid */
 		// std::cout << "Drawing grid with " << grid.indices.size() / 3 << " triangles\n";
@@ -200,9 +157,6 @@ int main()
 
 
 	// Delete all the objects we've created
-	pyramidVAO.Delete(); cubeVAO.Delete();
-	pyramidVBO.Delete(); pyramidEBO.Delete();
-	cubeVBO.Delete(); cubeEBO.Delete();
 	shaderProgram.Delete();
 	glfwDestroyWindow(window);
 	glfwTerminate();

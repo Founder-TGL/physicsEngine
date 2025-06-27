@@ -21,6 +21,7 @@ public:
 private:
     glm::vec3 position;
     float warpSharpness;
+    std::vector<GLfloat> baseVertices;
 };
 
 #endif
