@@ -1,3 +1,4 @@
+# BUILD AND RUN FROM MAIN, THE EXE DOES NOT WORK
 # CONTOLS FOR PHYSICS ENGINE
 ### I have always been fascinated by space, and with this being my first real 3d project I believe it turned out great, there was lots of time spent debugging, but I learned alot
 #### this program simulates gravitation pull between multiple objects (you might notice some 3 body problems when you refres where because of the floas you get crazy new orbital paths {this is rare though!!!})
